@@ -1,0 +1,397 @@
+School Management System
+Attendance Module — Upgrade Plan & Architecture
+1. Objective:
+---------------
+Current attendance:
+Enter Student ID
+      ↓
+Enter P / A
+      ↓
+Save
+இதை upgrade செய்து:
+
+
+Teacher
+      ↓
+Select Grade 
+      ↓
+Select Date
+      ↓
+Load Student List
+      ↓
+Mark Present / Absent
+      ↓
+Save Attendance
+      ↓
+Attendance Records
+      ↓
+History / Percentage / Reports
+என்ற real-world attendance workflow ஆக மாற்றுவது.
+
+
+2. Main Features:
+---------------------
+
+Attendance Management
+1. Mark Daily Attendance
+2. View Daily Attendance
+3. View Student Attendance History
+4. View Class Attendance
+5. Calculate Attendance Percentage
+6. Monthly Attendance Report
+7. Update Attendance
+8. Prevent Duplicate Attendance
+
+3. Mark Attendance Workflow:
+--------------------------------------
+
+Teacher/Admin:
+        MARK ATTENDANCE
+              │
+              ▼
+       Select Grade
+              │
+              ▼
+        Select Class
+              │
+              ▼
+        Select Date
+              │
+              ▼
+     Load Students
+              │
+              ▼
+ ┌─────────────────────────┐
+ │ Student List             				      │
+ │                                                                  │
+ │ Arun       Present/Absent                        │
+ │ Bala       Present/Absent                          │
+ │ Kumar      Present/Absent                      │
+ │ Ravi       Present/Absent                          │
+ └─────────────────────────┘
+              │
+              ▼
+       Save Attendance
+              │
+              ▼
+       Attendance Record
+Important design
+Student ID-ஐ ஒவ்வொரு student-க்கும் manually enter செய்ய வேண்டாம்.
+Class select செய்தவுடன் அந்த class-ல் இருக்கும் complete student list automatically display ஆக வேண்டும்.
+
+4. Attendance Screen Concept:
+-------------------------------------
+========================================
+          MARK ATTENDANCE
+========================================
+
+Grade : 12
+Class : A
+Date  : 08-09-2026
+
+----------------------------------------
+ID       Student Name       Attendance
+----------------------------------------
+101      Arun Kumar         Present
+102      Bala Kumar         Absent
+103      Karthik               Present
+104      Ravi               Present
+105      Suresh             Absent
+----------------------------------------
+
+Present : 3
+Absent  : 2
+Total   : 5
+
+        [ SAVE ATTENDANCE ]
+========================================
+
+5. Attendance Data Model:
+---------------------------------
+ஒரு attendance record-க்கு முக்கியமான information:
+Attendance
+│
+├── Student ID
+├── Date
+├── Status
+├── Grade/Class
+└── Marked By
+Example:
+Student ID : 101
+Date       : 08-09-2026
+Class      : 12-A
+Status     : PRESENT
+Marked By  : Teacher/Admin
+
+6. Architecture:
+-------------------
+உங்கள் existing Java package project-க்கு layered architecture நல்ல choice.
+                  SCHOOL MANAGEMENT SYSTEM
+                           │
+                           ▼
+                     Presentation
+                     / Console UI
+                           │
+                           ▼
+                      Service Layer
+                           │
+                           ▼
+                    Business Logic
+                           │
+                           ▼
+                     Model / Entity
+                           │
+                           ▼
+                   Data / Repository
+Package Architecture
+src/
+└── school/
+    │
+    ├── main/
+    │   └── Main.java
+    │
+    ├── model/
+    │   ├── Student.java
+    │   ├── Teacher.java
+    │   ├── Attendance.java
+    │   └── Marks.java
+    │
+    ├── attendance/
+    │   ├── AttendanceService.java
+    │   └── AttendanceReport.java
+    │
+    ├── core/
+    │   └── School.java
+   
+
+இதில் உங்கள் existing Student, Teacher, Attendance, School, Marks structure-ஐ completely destroy செய்ய வேண்டிய அவசியம் இல்லை.
+
+7. Responsibility of Each Layer
+model:
+-------------------------------------
+
+Data மட்டும் represent செய்யும்.
+Student
+Teacher
+Attendance
+Marks
+
+Example concept:
+
+Student
+   ↓
+ID
+Name
+Grade
+Class
+attendance
+Attendance-specific business operations.
+AttendanceService
+இதன் responsibility:
+Mark attendance
+View attendance
+Update attendance
+Find attendance
+Calculate percentage
+AttendanceReport
+Reporting logic:
+Daily Report
+Monthly Report
+Student History
+Class Report
+Attendance Percentage
+School
+Overall school data management.
+Students
+Teachers
+Marks
+Attendance
+அதாவது School என்பது entire system-ன் central domain manager மாதிரி இருக்கும்.
+main
+User interaction / menu flow.
+Main
+ ↓
+School Menu
+ ↓
+Attendance Menu
+ ↓
+Attendance operations
+
+8. Data Flow:
+-----------------
+ஒரு teacher attendance mark செய்யும்போது:
+Main
+ │
+ │ Select Attendance
+ ▼
+Attendance Menu
+ │
+ │ Select Class + Date
+ ▼
+School
+ │
+ │ Get students
+ ▼
+Student List
+ │
+ │ Present / Absent
+ ▼
+Attendance Service
+ │
+ │ Validate
+ ▼
+Attendance Record
+ │
+ ▼
+Save
+
+9. Business Rules:
+----------------------
+இந்த rules project-க்கு மிகவும் important.
+Rule 1 — Student Validation
+Selected class-ல் இல்லாத student attendance mark செய்யக்கூடாது.
+Rule 2 — Duplicate Prevention
+ஒரே student-க்கு:
+08-09-2026
+date-ல் இரண்டு attendance records இருக்கக்கூடாது.
+Rule 3 — Valid Status
+Only:
+PRESENT
+ABSENT
+Rule 4 — Date
+Future date attendance normally allow செய்யக்கூடாது.
+Rule 5 — Complete Class
+Daily attendance save செய்யும்போது selected class-ல் உள்ள students அனைவருக்கும் status இருக்க வேண்டும்.
+Rule 6 — Update
+Wrong attendance இருந்தால் authorized user அதை update செய்ய முடியும்.
+
+10. Reports:
+--------------
+Student History
+Student : Arun
+Class   : 12-A
+
+Date          Status
+---------------------
+01-09-2026    Present
+02-09-2026    Present
+03-09-2026    Absent
+04-09-2026    Present
+Percentage
+Total Working Days : 25
+Present            : 22
+Absent             : 3
+
+Attendance : 88%
+Class Report
+Class : 12-A
+
+Student      Present    Absent    %
+------------------------------------
+Arun         22         3        88%
+Bala         20         5        80%
+Karthik      24         1        96%
+
+11. Final Attendance Menu:
+---------------------------------
+================================
+       ATTENDANCE MANAGEMENT
+================================
+
+1. Mark Attendance
+2. View Daily Attendance
+3. View Student Attendance
+4. View Class Attendance
+5. Attendance Percentage
+6. Monthly Attendance Report
+7. Update Attendance
+8. Back
+
+Choose your option:
+
+12. Implementation Plan:
+-------------------------------
+நம்ம இதை ஒரே நேரத்தில் முழுவதும் change பண்ணாமல் இந்த order-ல் செய்வது safest.
+Phase 1 — Attendance Model
+Existing Attendance class review.
+Student ID
+Date
+Status
+Class
+Phase 2 — Student/Class Integration
+Student-க்கு:
+Grade
+Class
+information சரியாக available இருக்க வேண்டும்.
+Phase 3 — Daily Attendance
+முதலில்:
+Select Class
+→ Select Date
+→ Display Students
+→ Present/Absent
+→ Save
+இந்த core feature complete செய்யலாம்.
+Phase 4 — Validation
+Add:
+Invalid student
+Duplicate date
+Invalid status
+Invalid class
+Invalid date
+validation.
+Phase 5 — History
+Implement:
+Student Attendance History
+Daily Attendance
+Class Attendance
+Phase 6 — Percentage
+Implement:
+Present count
+Absent count
+Working days
+Attendance percentage
+Phase 7 — Reports
+Finally:
+Monthly Report
+Class Report
+Student Report
+Final Architecture
+                         MAIN
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │   SCHOOL MENU   │
+                 └────────┬────────┘
+                          │
+             ┌────────────┼────────────┐
+             ▼            ▼            ▼
+         Students      Teachers     Attendance
+                                       │
+                                       ▼
+                             ┌──────────────────┐
+                             │ Attendance Menu   │
+                             └────────┬─────────┘
+                                      │
+                ┌─────────────────────┼─────────────────────┐
+                ▼                     ▼                     ▼
+          Mark Attendance        View History           Reports
+                │                     │                     │
+                ▼                     ▼                     ▼
+          Select Class          Student History      Monthly Report
+          Select Date           Class History        Percentage
+                │
+                ▼
+         Load Student List
+                │
+                ▼
+       Present / Absent
+                │
+                ▼
+             Validate
+                │
+                ▼
+              Save
+                │
+                ▼
+        Attendance Records
+இந்த architecture-ல முக்கியமான point: Attendance என்பது Student ID + P/A மட்டும் இல்லாமல், Student + Class + Date + Status + History + Reporting ஆகியவற்றை இணைக்கும் ஒரு proper module ஆக மாறும்.

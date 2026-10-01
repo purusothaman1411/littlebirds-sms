@@ -1,0 +1,940 @@
+SCHOOL MANAGEMENT SYSTEM — COMPLETE PROJECT DOCUMENTATION
+
+1. PROJECT STRUCTURE
+====================
+
+SchoolManagementSystem
+│
+├── src
+│   └── com
+│       │
+│       ├── authentication
+│       │   └── LoginManager.java
+│       │
+│       ├── classes
+│       │   ├── Student.java
+│       │   ├── Teacher.java
+│       │   ├── Marks.java
+│       │   └── Attendance.java
+│       │
+│       ├── exceptions
+│       │   ├── StudentNotFoundException.java
+│       │   ├── StudentAlreadyExistsException.java
+│       │   ├── TeacherNotFoundException.java
+│       │   ├── TeacherAlreadyExistsException.java
+│       │   └── InvalidMarkException.java
+│       │
+│       ├── filehandling
+│       │   └── StaffFileHandler.java
+│       │
+│       ├── main
+│       │   └── SchoolManagement.java
+│       │
+│       ├── operations
+│       │   ├── StudentOperations.java
+│       │   ├── TeacherOperations.java
+│       │   ├── MarksOperations.java
+│       │   ├── AttendanceOperations.java
+│       │   └── ReportOperations.java
+│       │
+│       └── staff
+│           ├── Staff.java
+│           ├── Role.java
+│           └── StaffPermissions.java
+│
+├── data
+│   └── staff.txt
+│
+├── bin
+│   └── Compiled .class files
+│
+└── plan
+    ├── Attend plan.txt
+    ├── Detailed implementation .txt
+    ├── file + staff .txt
+    ├── plan.md
+    ├── Project All.txt
+    └── SchoolManagementSystem_Complete_Case_Study.docx
+
+
+2. PACKAGE RESPONSIBILITY
+=========================
+
++----------------------------------------------------+
+|                  PACKAGE STRUCTURE                 |
++----------------------------------------------------+
+|                                                    |
+| com.main                                            |
+|     -> Main program and menu navigation            |
+|                                                    |
+| com.authentication                                  |
+|     -> Staff login and authentication              |
+|                                                    |
+| com.filehandling                                    |
+|     -> Reading staff information from file         |
+|                                                    |
+| com.staff                                           |
+|     -> Staff details, roles and permissions         |
+|                                                    |
+| com.operations                                      |
+|     -> Student, Teacher, Marks, Attendance, Reports|
+|                                                    |
+| com.classes                                         |
+|     -> Data / model classes                         |
+|                                                    |
+| com.exceptions                                      |
+|     -> Custom exception handling                   |
+|                                                    |
++----------------------------------------------------+
+
+
+3. PROJECT DATA FLOW
+====================
+
+                         USER
+                          |
+                          v
+              +----------------------+
+              |   SchoolManagement   |
+              |       .java          |
+              |  Main / Controller   |
+              +----------+-----------+
+                         |
+                         v
+                  +-------------+
+                  | LoginManager|
+                  +------+------+
+                         |
+                         v
+                +-----------------+
+                | StaffFileHandler|
+                +-------+---------+
+                        |
+                        v
+                  data/staff.txt
+                        |
+                        v
+                  +-------------+
+                  |    Staff    |
+                  +------+------+
+                         |
+                         v
+                  +-------------+
+                  |    Role     |
+                  +------+------+
+                         |
+                         v
+              +---------------------+
+              |  StaffPermissions   |
+              +----------+----------+
+                         |
+                         v
+                     MAIN MENU
+                         |
+       +-----------------+------------------+
+       |                 |                  |
+       v                 v                  v
+   Students          Teachers             Marks
+       |                 |                  |
+       v                 v                  v
+StudentOperations TeacherOperations MarksOperations
+       |                 |                  |
+       v                 v                  v
+   Student           Teacher              Marks
+       |                                    |
+       +--------------------+---------------+
+                            |
+                            v
+                   Attendance Operations
+                            |
+                            v
+                       Attendance
+                            |
+                            v
+                    Report Operations
+                            |
+                            v
+                     Reports / Results
+
+
+4. LOGIN AND STAFF DATA FLOW
+============================
+
+                    SchoolManagement.java
+                            |
+                            v
+                    LoginManager.login()
+                            |
+                            v
+                  StaffFileHandler.loadStaff()
+                            |
+                            v
+                     data/staff.txt
+                            |
+                            v
+                     Staff Objects
+                            |
+                            v
+                          Role
+                            |
+          +-----------------+-----------------+
+          |                 |                 |
+          v                 v                 v
+      HEADMASTER       SUBJECT_STAFF     WORKING_STAFF
+          |                 |                 |
+          +-----------------+-----------------+
+                            |
+                            v
+                    StaffPermissions
+                            |
+                            v
+                    Access Control
+
+
+5. STAFF CLASS UML
+==================
+
++-------------------------------------+
+|               Staff                 |
++-------------------------------------+
+| - staffId : String                 |
+| - name : String                    |
+| - username : String                |
+| - password : String                |
+| - role : Role                      |
+| - classRange : String              |
+| - group : String                   |
+| - subjects : ArrayList<String>     |
++-------------------------------------+
+| + Staff(...)                       |
+| + getStaffId()                     |
+| + getName()                        |
+| + getUsername()                    |
+| + getPassword()                    |
+| + getRole()                        |
+| + getClassRange()                  |
+| + getGroup()                       |
+| + getSubjects()                    |
+| + setName()                        |
+| + setUsername()                    |
+| + setPassword()                    |
+| + setRole()                        |
+| + setClassRange()                  |
+| + setGroup()                       |
+| + setSubjects()                    |
++-------------------------------------+
+
+
+6. ROLE UML
+===========
+
++-----------------------------+
+|       <<Enumeration>>       |
+|            Role             |
++-----------------------------+
+| HEADMASTER                  |
+| SUBJECT_STAFF               |
+| WORKING_STAFF               |
+| MANAGEMENT_STAFF            |
++-----------------------------+
+
+
+7. STAFF PERMISSIONS UML
+========================
+
++------------------------------------+
+|        StaffPermissions            |
++------------------------------------+
+| + canAddStudent()                 |
+| + canViewStudent()                |
+| + canUpdateStudent()              |
+| + canDeleteStudent()              |
+|                                    |
+| + canAddTeacher()                 |
+| + canViewTeacher()                |
+| + canUpdateTeacher()              |
+| + canDeleteTeacher()              |
+|                                    |
+| + canAddMarks()                   |
+| + canUpdateMarks()                |
+| + canViewMarks()                  |
+|                                    |
+| + canMarkAttendance()             |
+| + canViewAttendance()             |
+|                                    |
+| + canViewReports()                |
+| + canViewReportCard()             |
++------------------------------------+
+
+
+8. STUDENT CLASS UML
+====================
+
++------------------------------------+
+|             Student                |
++------------------------------------+
+| - id : int                        |
+| - name : String                   |
+| - dob : String                    |
+| - age : int                       |
+| - gender : String                 |
+| - standard : String               |
+| - address : String                |
+| - contactNumber : String          |
+| - group : String                  |
++------------------------------------+
+| + Student(...)                    |
+| + getId()                         |
+| + setId()                         |
+| + getName()                       |
+| + setName()                       |
+| + getDob()                        |
+| + setDob()                        |
+| + getAge()                        |
+| + setAge()                        |
+| + getGender()                     |
+| + setGender()                     |
+| + getStandard()                   |
+| + setStandard()                   |
+| + getAddress()                    |
+| + setAddress()                    |
+| + getContactNumber()              |
+| + setContactNumber()              |
+| + getGroup()                      |
+| + setGroup()                      |
+| + toString()                      |
++------------------------------------+
+
+
+9. TEACHER CLASS UML
+====================
+
++------------------------------------+
+|             Teacher                |
++------------------------------------+
+| - id : int                        |
+| - name : String                   |
+| - dob : String                    |
+| - age : int                       |
+| - gender : String                 |
+| - qualification : String          |
+| - contact : String                |
+| - address : String                |
+| - subjects : ArrayList<String>    |
++------------------------------------+
+| + Teacher(...)                    |
+| + getId()                         |
+| + setId()                         |
+| + getName()                       |
+| + setName()                       |
+| + getDob()                        |
+| + setDob()                        |
+| + getAge()                        |
+| + setAge()                        |
+| + getGender()                     |
+| + setGender()                     |
+| + getQualification()              |
+| + setQualification()              |
+| + getContact()                   |
+| + setContact()                   |
+| + getAddress()                    |
+| + setAddress()                    |
+| + getSubjects()                   |
+| + setSubjects()                  |
+| + addSubject()                    |
+| + toString()                      |
++------------------------------------+
+
+
+10. MARKS CLASS UML
+===================
+
++-------------------------------------+
+|               Marks                 |
++-------------------------------------+
+| - studentId : int                 |
+| - marks : HashMap<String,Integer> |
++-------------------------------------+
+| + Marks()                         |
+| + getStudentId()                  |
+| + getMarks()                      |
+| + addMark()                       |
+| + updateMark()                    |
+| + getMark()                       |
++-------------------------------------+
+
+
+11. ATTENDANCE CLASS UML
+========================
+
++------------------------------------+
+|            Attendance              |
++------------------------------------+
+| - studentId : int                 |
+| - presentDays : int               |
+| - absentDays : int                |
++------------------------------------+
+| + Attendance()                    |
+| + getStudentId()                  |
+| + getPresentDays()                |
+| + getAbsentDays()                 |
+| + markPresent()                   |
+| + markAbsent()                    |
+| + getTotalDays()                  |
+| + getPercentage()                 |
+| + toString()                      |
++------------------------------------+
+
+
+12. STUDENT OPERATIONS UML
+==========================
+
++------------------------------------+
+|        StudentOperations          |
++------------------------------------+
+| - students : ArrayList<Student>   |
++------------------------------------+
+| + addStudent()                    |
+| + getStudent()                    |
+| + getAllStudents()                |
+| + updateStudent()                 |
+| + deleteStudent()                 |
+| + searchStudent()                 |
+| + getStudentById()                |
+| + getStudents()                   |
++-----------------+------------------+
+                  |
+                  | manages
+                  v
+             +----------+
+             | Student  |
+             +----------+
+
+
+13. TEACHER OPERATIONS UML
+==========================
+
++------------------------------------+
+|        TeacherOperations          |
++------------------------------------+
+| - teachers : ArrayList<Teacher>   |
++------------------------------------+
+| + addTeacher()                    |
+| + getTeacher()                    |
+| + getAllTeachers()                |
+| + updateTeacher()                 |
+| + deleteTeacher()                 |
+| + searchTeacherBySubject()        |
+| + teachersMoreThanTwoSubjects()   |
+| + getTeacherById()                |
+| + getTeachers()                   |
++-----------------+------------------+
+                  |
+                  | manages
+                  v
+             +----------+
+             | Teacher  |
+             +----------+
+
+
+14. MARKS OPERATIONS UML
+========================
+
++-----------------------------------------+
+|            MarksOperations              |
++-----------------------------------------+
+| - marks : HashMap<Integer, HashMap>    |
++-----------------------------------------+
+| + addMarks()                           |
+| + updateMarks()                        |
+| + getMarks()                           |
+| + totalMarks()                         |
+| + averageMarks()                       |
+| + percentage()                         |
+| + grade()                              |
+| + passFail()                           |
+| + highestMarks()                       |
+| + passedStudents()                     |
+| + studentsAbove50()                    |
+| + sortMarks()                          |
+| + getMark()                            |
+| + getStudentMarks()                    |
+| + removeMarks()                        |
++------------------+----------------------+
+                   |
+                   v
+             +------------+
+             |   Marks    |
+             +------------+
+                   |
+                   v
+             +------------+
+             |  Student   |
+             +------------+
+
+
+15. ATTENDANCE OPERATIONS UML
+=============================
+
++--------------------------------------+
+|       AttendanceOperations           |
++--------------------------------------+
+| - attendanceRecords : HashMap        |
++--------------------------------------+
+| + markAttendance()                  |
+| + getAttendance()                   |
+| + addAttendance()                   |
+| + updateAttendance()                |
+| + getAttendanceRecords()            |
+| + removeAttendance()                |
++------------------+-------------------+
+                   |
+                   v
+            +--------------+
+            |  Attendance  |
+            +------+-------+
+                   |
+                   | belongs to
+                   v
+              +---------+
+              | Student |
+              +---------+
+
+
+16. REPORT OPERATIONS UML
+=========================
+
++------------------------------------+
+|        ReportOperations            |
++------------------------------------+
+| + generateReportCard()            |
+| + classWiseResults()              |
++-----------------+------------------+
+                  |
+          +-------+--------+
+          |                |
+          v                v
+       Student            Marks
+          |                |
+          +-------+--------+
+                  |
+                  v
+             Attendance
+                  |
+                  v
+          REPORT / RESULT
+
+
+17. AUTHENTICATION UML
+======================
+
++------------------------------+
+|       LoginManager           |
++------------------------------+
+| + login(Scanner) : Staff    |
++---------------+--------------+
+                |
+                | loads
+                v
++------------------------------+
+|     StaffFileHandler         |
++------------------------------+
+| - FILE_PATH                 |
++------------------------------+
+| + loadStaff()               |
++---------------+--------------+
+                |
+                v
+          data/staff.txt
+                |
+                v
+              Staff
+                |
+                v
+              Role
+
+
+18. EXCEPTION ARCHITECTURE
+===========================
+
+                    Custom Exceptions
+                           |
+        +------------------+------------------+
+        |                  |                  |
+        v                  v                  v
+ Student Exceptions   Teacher Exceptions    Marks
+        |                  |                  |
+   +----+----+        +----+----+             v
+   |         |        |         |       InvalidMarkException
+   v         v        v         v
+Student   Student  Teacher   Teacher
+NotFound  Already  NotFound  Already
+Exception Exists   Exception Exists
+           Exception          Exception
+
+
+19. COMPLETE UML DIAGRAM
+========================
+
+                              +--------------------------+
+                              |   SchoolManagement       |
+                              |   <<Main / Controller>>  |
+                              +------------+-------------+
+                                           |
+                                           v
+                              +--------------------------+
+                              |      LoginManager        |
+                              +------------+-------------+
+                                           |
+                                           v
+                              +--------------------------+
+                              |    StaffFileHandler      |
+                              +------------+-------------+
+                                           |
+                                           v
+                                    data/staff.txt
+                                           |
+                                           v
+                              +--------------------------+
+                              |          Staff           |
+                              +------------+-------------+
+                                           |
+                                           v
+                              +--------------------------+
+                              |          Role            |
+                              +------------+-------------+
+                                           |
+                                           v
+                              +--------------------------+
+                              |    StaffPermissions      |
+                              +------------+-------------+
+                                           |
+                 +-------------------------+-------------------------+
+                 |                         |                         |
+                 v                         v                         v
+      +--------------------+   +--------------------+   +--------------------+
+      | StudentOperations  |   | TeacherOperations  |   |  MarksOperations   |
+      +---------+----------+   +---------+----------+   +---------+----------+
+                |                        |                        |
+                v                        v                        v
+          +----------+              +----------+              +----------+
+          | Student  |              | Teacher  |              |  Marks   |
+          +----+-----+              +----------+              +----+-----+
+               |                                               |
+               +----------------------+------------------------+
+                                      |
+                                      v
+                            +--------------------+
+                            |AttendanceOperations|
+                            +---------+----------+
+                                      |
+                                      v
+                                +-----------+
+                                | Attendance|
+                                +-----+-----+
+                                      |
+                                      v
+                            +--------------------+
+                            |  ReportOperations  |
+                            +---------+----------+
+                                      |
+                                      v
+                               REPORT / RESULT
+
+
+Exception Layer
+---------------
+
+StudentOperations -> StudentNotFoundException
+                  -> StudentAlreadyExistsException
+
+TeacherOperations -> TeacherNotFoundException
+                  -> TeacherAlreadyExistsException
+
+MarksOperations   -> InvalidMarkException
+
+
+20. COMPLETE PROJECT DATA FLOW
+==============================
+
+                         +--------------+
+                         |     USER     |
+                         +------+-------+
+                                |
+                                v
+                  +-------------------------+
+                  | SchoolManagement.java   |
+                  +------------+------------+
+                               |
+                               v
+                           LOGIN
+                               |
+                               v
+                     +----------------+
+                     | LoginManager   |
+                     +-------+--------+
+                             |
+                             v
+                  +--------------------+
+                  | StaffFileHandler   |
+                  +---------+----------+
+                            |
+                            v
+                        staff.txt
+                            |
+                            v
+                          Staff
+                            |
+                            v
+                           Role
+                            |
+                            v
+                    StaffPermissions
+                            |
+                            v
+                       MAIN MENU
+                            |
+        +-------------------+--------------------+
+        |                   |                    |
+        v                   v                    v
+     STUDENT             TEACHER               MARKS
+      MENU                MENU                 MENU
+        |                   |                    |
+        v                   v                    v
+ StudentOperations   TeacherOperations    MarksOperations
+        |                   |                    |
+        v                   v                    v
+     Student             Teacher                Marks
+        |                                        |
+        +-------------------+--------------------+
+                            |
+                            v
+                   ATTENDANCE MENU
+                            |
+                            v
+                 AttendanceOperations
+                            |
+                            v
+                       Attendance
+                            |
+                            v
+                     REPORT MENU
+                            |
+                            v
+                  ReportOperations
+                            |
+                  +---------+---------+
+                  |                   |
+                  v                   v
+             Report Card        Class Results
+
+
+21. PROJECT ARCHITECTURE DIAGRAM
+================================
+
++----------------------------------------------------------+
+|              SCHOOL MANAGEMENT SYSTEM                    |
++-----------------------------+----------------------------+
+                              |
+                              v
++----------------------------------------------------------+
+|                    PRESENTATION LAYER                    |
+|                                                          |
+|              SchoolManagement.java                       |
+|                  Main / Menus                            |
++-----------------------------+----------------------------+
+                              |
+                              v
++----------------------------------------------------------+
+|                 AUTHENTICATION LAYER                     |
+|                                                          |
+|                  LoginManager                            |
+|                       |                                  |
+|                       v                                  |
+|                StaffFileHandler                          |
+|                       |                                  |
+|                       v                                  |
+|                 data/staff.txt                           |
++-----------------------------+----------------------------+
+                              |
+                              v
++----------------------------------------------------------+
+|                  AUTHORIZATION LAYER                     |
+|                                                          |
+|                       Staff                              |
+|                        |                                 |
+|                        v                                 |
+|                       Role                               |
+|                        |                                 |
+|                        v                                 |
+|                StaffPermissions                          |
++-----------------------------+----------------------------+
+                              |
+                              v
++----------------------------------------------------------+
+|                  BUSINESS LOGIC LAYER                    |
+|                                                          |
+|  +----------------+  +----------------+                 |
+|  |StudentOperations|  |TeacherOperations|               |
+|  +--------+-------+  +--------+-------+                 |
+|           |                   |                           |
+|  +--------v-------+  +--------v----------+               |
+|  |MarksOperations |  |AttendanceOperations|             |
+|  +--------+-------+  +--------+----------+               |
+|           |                   |                           |
+|           +---------+---------+                           |
+|                     v                                     |
+|              ReportOperations                            |
++-----------------------------+----------------------------+
+                              |
+                              v
++----------------------------------------------------------+
+|                     MODEL LAYER                          |
+|                                                          |
+|     Student       Teacher       Marks       Attendance   |
++-----------------------------+----------------------------+
+                              |
+                              v
++----------------------------------------------------------+
+|                   EXCEPTION LAYER                        |
+|                                                          |
+| StudentNotFound       StudentAlreadyExists              |
+| TeacherNotFound       TeacherAlreadyExists              |
+| InvalidMark                                             |
++----------------------------------------------------------+
+
+
+22. OVERALL ARCHITECTURE - SIMPLE VERSION
+=========================================
+
+                    SCHOOL MANAGEMENT SYSTEM
+                              |
+                              v
+                    +-----------------+
+                    |SchoolManagement |
+                    |     .java       |
+                    | Main / Menu     |
+                    +--------+--------+
+                             |
+                             v
+                          LOGIN
+                             |
+                             v
+                     +--------------+
+                     | LoginManager |
+                     +------+-------+
+                            |
+                            v
+                  +------------------+
+                  |StaffFileHandler  |
+                  +--------+---------+
+                           |
+                           v
+                      staff.txt
+                           |
+                           v
+                        Staff
+                           |
+                           v
+                         Role
+                           |
+                           v
+                   StaffPermissions
+                           |
+                           v
+                      MAIN MENU
+                           |
+        +------------------+------------------+
+        |                  |                  |
+        v                  v                  v
+     Student            Teacher              Marks
+     Module              Module              Module
+        |                  |                  |
+        v                  v                  v
+ StudentOperations  TeacherOperations  MarksOperations
+        |                  |                  |
+        v                  v                  v
+     Student            Teacher              Marks
+        |                                     |
+        +--------------------+----------------+
+                             |
+                             v
+                   AttendanceOperations
+                             |
+                             v
+                        Attendance
+                             |
+                             v
+                    ReportOperations
+                             |
+                    +--------+--------+
+                    |                 |
+                    v                 v
+               Report Card      Class Results
+
+
+23. CURRENT PROJECT OBSERVATIONS
+================================
+
+- School.java is NOT part of the current project structure.
+- LoginManager -> StaffFileHandler -> staff.txt is the authentication flow.
+- Role contains:
+    HEADMASTER
+    SUBJECT_STAFF
+    WORKING_STAFF
+    MANAGEMENT_STAFF
+
+- StaffPermissions is used for role-based access control.
+- Custom exceptions currently include:
+    StudentNotFoundException
+    StudentAlreadyExistsException
+    TeacherNotFoundException
+    TeacherAlreadyExistsException
+    InvalidMarkException
+
+- Model classes include:
+    Student
+    Teacher
+    Marks
+    Attendance
+
+- Business operation classes include:
+    StudentOperations
+    TeacherOperations
+    MarksOperations
+    AttendanceOperations
+    ReportOperations
+
+- Attendance currently records attendance using student ID and Present/Absent input.
+- Marks operations contain standard/group based subject selection logic.
+- Report operations combine student, marks and attendance information.
+- Current Student ID type is int.
+- bin contains compiled .class files and is not a business-logic layer.
+- plan contains project planning and documentation files and should be retained.
+
+
+24. ONE-LINE PROJECT FLOW
+=========================
+
+USER
+  |
+  v
+LOGIN
+  |
+  v
+STAFF + ROLE
+  |
+  v
+PERMISSION CONTROL
+  |
+  v
+MAIN MENU
+  |
+  v
+STUDENT / TEACHER / MARKS / ATTENDANCE / REPORT
+  |
+  v
+MODEL CLASSES
+  |
+  v
+EXCEPTIONS + DATA HANDLING

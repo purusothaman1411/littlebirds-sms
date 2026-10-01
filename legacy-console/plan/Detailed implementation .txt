@@ -1,0 +1,588 @@
+School Management System — Detailed Implementation Plan
+Based on your current project, the main goal is to restructure the menu into three major modules:
+1. Students
+2. Teachers
+3. Marks
+4. Exit
+Your current files are Main.java, School.java, and Student.java. Main.javaJAVA School.javaJAVA Student.javaJAVA
+The important point is: do not rewrite everything at once. Refactor the existing project step by step.
+1. Current Project Structure
+Currently you have:
+Main.java
+    ↓
+School.java
+    ↓
+Student.java
+Main.java
+Currently responsible for:
+- Displaying the menu
+- Getting user input
+- Calling student methods
+- Calling marks methods
+- Running the main switch
+Main.javaJAVASchool.java
+Currently contains the management logic:
+- addStudent()
+- viewStudent()
+- viewAllStudents()
+- updateStudent()
+- addStudentMarks()
+- updateStudentMarks()
+- viewStudentMarks()
+- studentTotalMarks()
+- findStudentsAbove50()
+School.javaJAVAStudent.java
+Contains:
+- Student fields
+- Marks fields
+- Constructor
+- Getters
+- Setters
+- getTotalMarks()
+- scoredAbove50InAllSubjects()
+- displayStudent()
+Student.javaJAVA2. New Menu Architecture
+Your new main menu should have only the major modules:
+========================================
+       SCHOOL MANAGEMENT SYSTEM
+========================================
+
+1. Students
+2. Teachers
+3. Marks
+4. Exit
+
+Choose your option:
+This is the main architectural change.
+Instead of having 10, 20, or 30 options in the main menu, the main menu only handles module selection.
+3. Overall Application Flow
+The application should work like this:
+                    SCHOOL MANAGEMENT SYSTEM
+                              |
+              +---------------+---------------+
+              |               |               |
+              ↓               ↓               ↓
+          STUDENTS         TEACHERS          MARKS
+              |               |               |
+              ↓               ↓               ↓
+       Student Menu      Teacher Menu      Marks Menu
+So:
+Main Menu
+   |
+   +-- 1. Students
+   |
+   +-- 2. Teachers
+   |
+   +-- 3. Marks
+   |
+   +-- 4. Exit
+4. Step 1 — Change Main.java
+This should be the first thing you implement.
+Currently your Main.java has all operations directly inside the main switch. Main.javaJAVA
+You should change its responsibility.
+New responsibility of Main.java
+Main.java should mainly handle:
+- Menu display
+- User input
+- Navigation
+- Calling the appropriate module menu
+It should not contain all the business logic.
+5. Create studentMenu() Method
+Inside Main.java, create a separate method conceptually called:
+studentMenu()
+Its responsibility is only to display and handle Student operations.
+The Student menu can be:
+========================================
+          STUDENT MANAGEMENT
+========================================
+
+1. Add Student
+2. View Student
+3. View All Students
+4. Update Student
+5. Delete Student
+6. Search Student
+7. Back
+
+Choose your option:
+6. Move Existing Student Operations into Student Menu
+You already have these methods in School.java:
+addStudent()
+viewStudent()
+viewAllStudents()
+updateStudent()
+Do not move these methods from School.java.
+Instead, change where they are called from.
+New flow:
+Main Menu
+    ↓
+Students
+    ↓
+Student Menu
+    ↓
+Add Student
+    ↓
+School.addStudent()
+So the method remains in:
+School.java
+but the menu option that calls it comes from:
+studentMenu()
+7. Add Delete Student
+This should be your first new Student feature.
+Add a new method in:
+School.java
+Method:
+deleteStudent()
+Responsibility
+Delete a student using Student ID.
+Flow
+Student Menu
+     ↓
+Delete Student
+     ↓
+Enter Student ID
+     ↓
+Search studentMap
+     ↓
+Student found?
+    /       \
+  Yes        No
+   ↓          ↓
+Delete      Show error
+Important
+Your School.java currently uses both:
+ArrayList<Student>
+HashMap<Integer, Student>
+School.javaJAVAWhen deleting a student, you must remove the student from both collections.
+Otherwise you can create inconsistent data.
+8. Add Student Search
+Create search functionality inside the Student module.
+Student menu:
+1. Add Student
+2. View Student
+3. View All Students
+4. Update Student
+5. Delete Student
+6. Search Student
+7. Back
+When the user selects Search:
+================================
+        SEARCH STUDENT
+================================
+
+1. Search by ID
+2. Search by Name
+3. Search by Class
+4. Back
+Recommended methods in School.java:
+searchStudentById()
+searchStudentByName()
+searchStudentByClass()
+9. Step 2 — Create Teacher Module
+Create a new file:
+Teacher.java
+Your new project structure becomes:
+SchoolManagementSystem/
+│
+├── Main.java
+├── School.java
+├── Student.java
+└── Teacher.java
+10. Teacher Fields
+Initially, Teacher.java can contain:
+Teacher ID
+Teacher Name
+Subject
+Qualification
+Address
+Contact
+Salary
+The Teacher class should be responsible for storing Teacher data.
+It should contain methods conceptually such as:
+getTeacherId()
+getTeacherName()
+getSubject()
+getQualification()
+getAddress()
+getContact()
+getSalary()
+
+setTeacherName()
+setSubject()
+setQualification()
+setAddress()
+setContact()
+setSalary()
+
+displayTeacher()
+11. Create teacherMenu() in Main.java
+The Teacher module should have:
+========================================
+          TEACHER MANAGEMENT
+========================================
+
+1. Add Teacher
+2. View Teacher
+3. View All Teachers
+4. Update Teacher
+5. Delete Teacher
+6. Search Teacher
+7. Back
+
+Choose your option:
+12. Teacher Data Storage
+Your current School.java stores Students using:
+ArrayList<Student>
+HashMap<Integer, Student>
+You can use the same architecture for teachers:
+ArrayList<Teacher>
+HashMap<Integer, Teacher>
+Why use both?
+ArrayList
+Useful for:
+View All Teachers
+HashMap
+Useful for:
+Find Teacher by ID
+Update Teacher
+Delete Teacher
+This is consistent with your existing Student architecture.
+13. Teacher Methods in School.java
+Add these management methods to School.java:
+addTeacher()
+viewTeacher()
+viewAllTeachers()
+updateTeacher()
+deleteTeacher()
+For searching:
+searchTeacherById()
+searchTeacherByName()
+searchTeacherBySubject()
+14. Teacher Flow
+The complete flow should be:
+Main Menu
+    ↓
+Teachers
+    ↓
+Teacher Menu
+    ↓
+Add Teacher
+    ↓
+Main.java gets input
+    ↓
+Create Teacher object
+    ↓
+School.addTeacher()
+    ↓
+Store Teacher
+The same pattern is already being used for students.
+15. Step 3 — Create Marks Menu
+Your existing marks functionality should become its own module.
+Create:
+marksMenu()
+inside Main.java.
+Menu:
+========================================
+            MARKS MANAGEMENT
+========================================
+
+1. Add Marks
+2. Update Marks
+3. View Marks
+4. Total Marks
+5. Average
+6. Percentage
+7. Grade
+8. Pass / Fail
+9. Highest Marks
+10. Lowest Marks
+11. Back
+
+Choose your option:
+16. Existing Marks Methods
+You already have these methods in School.java:
+addStudentMarks()
+updateStudentMarks()
+viewStudentMarks()
+studentTotalMarks()
+findStudentsAbove50()
+School.javaJAVADo not delete them.
+Instead, connect them to the new Marks menu.
+Mapping
+Marks Menu	Method
+Add Marks	addStudentMarks()
+Update Marks	updateStudentMarks()
+View Marks	viewStudentMarks()
+Total Marks	studentTotalMarks()
+Average	New method
+Percentage	New method
+Grade	New method
+Pass/Fail	New method
+Highest Marks	New method
+Lowest Marks	New method
+
+
+17. Result Calculation Methods
+Your Student.java is already responsible for mark-related data and has getTotalMarks(). Student.javaJAVA
+You can add these methods later:
+getAverage()
+getPercentage()
+getGrade()
+isPassed()
+getAverage()
+Purpose:
+Calculate average marks
+Concept:
+Total Marks
+     ÷
+Number of Subjects
+getPercentage()
+Purpose:
+Calculate percentage
+With 5 subjects, each out of 100:
+Total Marks
+     ÷
+500
+     ×
+100
+getGrade()
+Purpose:
+Return a grade based on percentage.
+Example:
+90–100 → A+
+80–89  → A
+70–79  → B
+60–69  → C
+50–59  → D
+Below 50 → F
+You can change this grading system later.
+isPassed()
+Purpose:
+Determine whether the student passed all subjects.
+Concept:
+Every subject >= passing mark
+             ↓
+           PASS
+If any subject is below the passing mark:
+           FAIL
+18. Highest and Lowest Marks
+These should be handled by School.java, because they require comparing multiple students.
+For example:
+Find the student who has the highest Maths mark.
+This isn't just one student's calculation.
+It requires:
+Student 1 → Maths
+Student 2 → Maths
+Student 3 → Maths
+Student 4 → Maths
+       ↓
+Compare all
+       ↓
+Highest
+So these belong in School.java.
+Possible methods:
+findHighestTamil()
+findHighestEnglish()
+findHighestMaths()
+findHighestScience()
+findHighestSocial()
+You can later improve this using a more generic approach.
+19. Important Correction in Your Existing Marks Logic
+There is a small inconsistency in your current project.
+In Student.java,:
+scoredAbove50InAllSubjects()
+uses:
+> 50
+But in School.java, findStudentsAbove50() uses:
+>= 50
+School.javaJAVA Student.javaJAVA
+Therefore:
+Student has exactly 50
+can produce different results depending on which method is used.
+You should decide one rule.
+For example:
+50 or above = eligible
+Then consistently use:
+>= 50
+20. Final Responsibility of Each File
+After the first stage of development, your files should have clear responsibilities.
+Main.java
+Responsible for:
+Main Menu
+Student Menu
+Teacher Menu
+Marks Menu
+User Input
+Navigation
+It answers:
+What does the user want to do?
+
+School.java
+Responsible for:
+Student Management
+Teacher Management
+Searching
+Updating
+Deleting
+Reports
+Comparisons
+Collections
+It answers:
+How should the management operation be performed?
+
+Student.java
+Responsible for:
+Student Data
+Student Fields
+Getters
+Setters
+Student-specific Calculations
+Teacher.java
+Responsible for:
+Teacher Data
+Teacher Fields
+Getters
+Setters
+Teacher-specific Methods
+21. Final File Structure
+Eventually:
+SchoolManagementSystem/
+│
+├── Main.java
+│
+├── School.java
+│
+├── Student.java
+│
+└── Teacher.java
+Later, when the project becomes bigger, you can further separate classes:
+SchoolManagementSystem/
+│
+├── Main.java
+│
+├── School.java
+│
+├── Student.java
+├── Teacher.java
+├── Marks.java
+├── Attendance.java
+└── Fees.java
+But don't create all these classes now.
+First complete Students → Teachers → Marks.
+22. Complete Navigation Design
+The final navigation should look like this:
+                    MAIN MENU
+                        │
+        ┌───────────────┼───────────────┐
+        ↓               ↓               ↓
+    STUDENTS         TEACHERS          MARKS
+        │               │               │
+        ↓               ↓               ↓
+ Student Menu      Teacher Menu      Marks Menu
+        │               │               │
+   ┌────┼────┐      ┌────┼────┐      ┌────┼─────────┐
+   ↓    ↓    ↓      ↓    ↓    ↓      ↓    ↓         ↓
+  Add  View Update  Add  View Update  Add  Update   View
+   │    │    │      │    │    │       │    │         │
+ Delete Search      Delete Search    Total Average Percentage
+                                     Grade Pass/Fail
+23. Recommended Implementation Order
+Do not implement all features at once.
+Follow this exact order.
+Phase 1 — Menu Refactoring
+Only modify Main.java.
+Implement:
+Main Menu
+    ↓
+1. Students
+2. Teachers
+3. Marks
+4. Exit
+Then create:
+studentMenu()
+teacherMenu()
+marksMenu()
+Connect your existing Student and Marks functionality.
+Phase 2 — Student Features
+Modify School.java.
+Add:
+deleteStudent()
+searchStudentById()
+searchStudentByName()
+searchStudentByClass()
+Then connect them to studentMenu().
+Phase 3 — Teacher Module
+Create:
+Teacher.java
+Modify:
+School.java
+Add:
+Teacher ArrayList
+Teacher HashMap
+
+addTeacher()
+viewTeacher()
+viewAllTeachers()
+updateTeacher()
+deleteTeacher()
+searchTeacherById()
+searchTeacherByName()
+searchTeacherBySubject()
+Then connect everything through:
+teacherMenu()
+Phase 4 — Result Features
+Modify:
+Student.java
+Add:
+getAverage()
+getPercentage()
+getGrade()
+isPassed()
+Then expose them through:
+marksMenu()
+Phase 5 — Reports
+Modify:
+School.java
+Add:
+findHighestMark()
+findLowestMark()
+findTopStudent()
+You can also improve your existing:
+findStudentsAbove50()
+24. Final Target
+Your project will eventually work like this:
+                 SCHOOL MANAGEMENT SYSTEM
+                           │
+             ┌─────────────┼─────────────┐
+             │             │                   │
+             ▼             ▼                  ▼
+         STUDENTS       TEACHERS        MARKS
+             │             │             │
+        Add Student    Add Teacher    Add Marks
+        View Student   View Teacher   Update Marks
+        View All       View All       View Marks
+        Update         Update         Total
+        Delete         Delete         Average
+        Search         Search         Percentage
+                                       Grade
+                                       Pass/Fail
+                                       Highest
+                                       Lowest
+The key architectural principle
+Keep this separation:
+Main.java
+    ↓
+MENU / NAVIGATION
+
+School.java
+    ↓
+MANAGEMENT / BUSINESS LOGIC
+
+Student.java
+    ↓
+STUDENT DATA
+
+Teacher.java
+    ↓
+TEACHER DATA
+This approach lets you keep your existing project and extend it feature-by-feature instead of creating a completely new project.

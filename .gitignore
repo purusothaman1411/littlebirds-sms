@@ -1,0 +1,24 @@
+# Personal / credential data from the legacy console app
+legacy-console/data/
+legacy-console/bin/
+
+# Office lock files
+~$*
+
+# Backend
+backend/target/
+backend/.env
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# IDE
+.idea/
+.vscode/
+.classpath
+.project
+.settings/
+*.iml

@@ -1,0 +1,79 @@
+SchoolManagementSystem/
+│
+├── src/
+│   └── com/
+│       │
+│       ├── main/
+│       │   └── SchoolManagement.java
+│       │
+│       ├── classes/
+│       │   ├── Student.java
+│       │   ├── Teacher.java
+│       │   ├── Marks.java
+│       │   └── Attendance.java
+│       │
+│       ├── operations/
+│       │   ├── StudentOperations.java
+│       │   ├── TeacherOperations.java
+│       │   ├── MarksOperations.java
+│       │   ├── AttendanceOperations.java
+│       │   └── ReportOperations.java
+│       │
+│       ├── authentication/
+│       │   └── LoginManager.java
+│       │
+│       ├── staff/
+│       │   ├── Staff.java
+│       │   ├── Role.java
+│       │   └── StaffPermissions.java
+│       │
+│       └── filehandling/
+│           └── StaffFileHandler.java
+│
+├── data/
+│   └── staff.txt
+│
+├── bin/
+│
+└── plan/
+
+
+
+                         SCHOOL MANAGEMENT SYSTEM
+                                  │
+                                  ↓
+                              LOGIN
+                                  │
+                         StaffFileHandler
+                                  │
+                                  ↓
+                         LoginManager
+                                  │
+                                  ↓
+                           Staff / Role
+                                  │
+              ┌───────────────────┼───────────────────┐
+              ↓                   ↓                   ↓
+        HEADMASTER          SUBJECT STAFF        OTHER STAFF
+          ADMIN                                     │
+              │                         ┌───────────┴───────────┐
+              │                         ↓                       ↓
+              │                   WORKING STAFF          MANAGEMENT STAFF
+              │
+              └──────────────────────┬────────────────────────┘
+                                     ↓
+                              PERMISSIONS
+                                     │
+                                     ↓
+                         ┌───────────────────────┐
+                         │ Existing Operations   │
+                         ├───────────────────────┤
+                         │ Student Operations    │
+                         │ Teacher Operations    │
+                         │ Marks Operations      │
+                         │ Attendance Operations │
+                         │ Report Operations     │
+                         └───────────────────────┘
+                                     │
+                                     ↓
+                              School Data
